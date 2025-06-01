@@ -1,10 +1,12 @@
-package com.carloscipreste.gragas.model.Produto.DTOs;
+package com.carloscipreste.gragas.model.produto.dto;
+
+import java.math.BigDecimal;
 
 import com.carloscipreste.gragas.enums.ProdutoStatus;
-import com.carloscipreste.gragas.model.Produto.Produto;
+import com.carloscipreste.gragas.model.produto.Produto;
 
-public record ProdutoResponseDTO(String nome, String descricao, String categoria, double preco, int quantidadeEstoque,
-        ProdutoStatus isAtivo) {
+public record ProdutoResponseDTO(String nome, String descricao, String categoria, BigDecimal preco, int quantidadeEstoque,
+        ProdutoStatus status) {
 
     public static ProdutoResponseDTO from(Produto produto) {
 
@@ -13,7 +15,7 @@ public record ProdutoResponseDTO(String nome, String descricao, String categoria
                 produto.getCategoria(),
                 produto.getPreco(),
                 produto.getQuantidadeEstoque(),
-                produto.getAtivo());
+                produto.getStatus());
     }
 
 }

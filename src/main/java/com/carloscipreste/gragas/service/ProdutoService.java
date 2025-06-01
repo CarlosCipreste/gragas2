@@ -4,13 +4,14 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.carloscipreste.gragas.exceptions.ProdutoNaoEncontradoException;
-import com.carloscipreste.gragas.model.Produto.Produto;
-import com.carloscipreste.gragas.model.Produto.DTOs.ProdutoResponseDTO;
-import com.carloscipreste.gragas.model.Produto.DTOs.ProdutoSaveDTO;
-import com.carloscipreste.gragas.model.Produto.DTOs.ProdutoUpdateDTO;
+import com.carloscipreste.gragas.enums.ProdutoStatus;
+import com.carloscipreste.gragas.model.produto.Produto;
+import com.carloscipreste.gragas.model.produto.dto.ProdutoResponseDTO;
+import com.carloscipreste.gragas.model.produto.dto.ProdutoSaveDTO;
+import com.carloscipreste.gragas.model.produto.dto.ProdutoUpdateDTO;
 import com.carloscipreste.gragas.repository.ProdutoRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -22,18 +23,6 @@ public class ProdutoService {
         this.produtoRepository = produtoRepository;
     }
 
-    public Produto salvarProduto(ProdutoSaveDTO dto) {
-        Produto novoProduto = new Produto(dto);
-        novoProduto.validar();
-        return produtoRepository.save(novoProduto);
-    }
-
-    public ProdutoResponseDTO buscarProdutoPorId(Long id) {
-        Produto produto = produtoRepository.findById(id)
-                .orElseThrow(() -> new ProdutoNaoEncontradoException(id));
-        return ProdutoResponseDTO.from(produto);
-    }
-
     public List<ProdutoResponseDTO> listarProdutos() {
         return produtoRepository.findAll()
                 .stream()
@@ -41,10 +30,29 @@ public class ProdutoService {
                 .toList();
     }
 
+    public List<ProdutoResponseDTO> listarProdutosAtivos() {
+        return produtoRepository.findByStatus(ProdutoStatus.DISPONIVEL)
+                .stream()
+                .map(ProdutoResponseDTO::from)
+                .toList();
+    }
+
+    public ProdutoResponseDTO buscarProdutoPorId(Long id) {
+        Produto produto = produtoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("PRODUTO não encontrado no id: " + id));
+        return ProdutoResponseDTO.from(produto);
+    }
+
+    public Produto salvarProduto(ProdutoSaveDTO dto) {
+        Produto novoProduto = new Produto(dto);
+
+        return produtoRepository.save(novoProduto);
+    }
+
     @Transactional
     public ProdutoResponseDTO atualizarProduto(ProdutoUpdateDTO dto, Long id) {
         Produto produto = produtoRepository.findById(id)
-                .orElseThrow(() -> new ProdutoNaoEncontradoException(id));
+                .orElseThrow(() -> new EntityNotFoundException("PRODUTO não encontrado no id: " + id));
 
         produto.atualizarComDTO(dto);
         produtoRepository.save(produto);
@@ -52,4 +60,10 @@ public class ProdutoService {
         return ProdutoResponseDTO.from(produto);
     }
 
+    @Transactional
+    public void desativaProduto(Long id) {
+        Produto produto = produtoRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("PRODUTO não encontrado no id: " + id));
+        produto.desativar();
+        produtoRepository.save(produto);
+    }
 }

@@ -3,6 +3,7 @@ package com.carloscipreste.gragas.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.carloscipreste.gragas.model.Produto.Produto;
-import com.carloscipreste.gragas.model.Produto.DTOs.ProdutoResponseDTO;
-import com.carloscipreste.gragas.model.Produto.DTOs.ProdutoSaveDTO;
-import com.carloscipreste.gragas.model.Produto.DTOs.ProdutoUpdateDTO;
+import com.carloscipreste.gragas.model.produto.Produto;
+import com.carloscipreste.gragas.model.produto.dto.ProdutoResponseDTO;
+import com.carloscipreste.gragas.model.produto.dto.ProdutoSaveDTO;
+import com.carloscipreste.gragas.model.produto.dto.ProdutoUpdateDTO;
 import com.carloscipreste.gragas.service.ProdutoService;
 
 import jakarta.validation.Valid;
@@ -36,6 +37,12 @@ public class ProdutoController {
         return ResponseEntity.ok().body(produtos);
     }
 
+    @GetMapping("/ativos")
+    public ResponseEntity<List<ProdutoResponseDTO>> listarProdutosAtivos() {
+        List<ProdutoResponseDTO> produtos = produtoService.listarProdutosAtivos();
+        return ResponseEntity.ok().body(produtos);
+    }
+
     @PostMapping
     ResponseEntity<Void> salvarProduto(@RequestBody @Valid ProdutoSaveDTO produto,  UriComponentsBuilder uriBuilder) {    
         Produto produtoSalvo = produtoService.salvarProduto(produto);
@@ -49,5 +56,10 @@ public class ProdutoController {
         return ResponseEntity.ok().body(produtoAtualizado);
     }
 
+    @DeleteMapping("/{id}")
+    ResponseEntity<Void> desativarProduto(@PathVariable Long id){
+        produtoService.desativaProduto(id);
+        return ResponseEntity.noContent().build();
+    }
     
 }

@@ -1,4 +1,6 @@
-package com.carloscipreste.gragas.model.Produto.DTOs;
+package com.carloscipreste.gragas.model.produto.dto;
+
+import java.math.BigDecimal;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -9,6 +11,6 @@ public record ProdutoSaveDTO(
         @NotBlank String nome,
         @Size(max = 255) String descricao,
         @NotBlank String categoria,
-        @Positive double preco,
+        @Positive BigDecimal preco,
         @Min(0) int quantidadeEstoque) {
 }

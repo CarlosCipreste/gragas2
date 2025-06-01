@@ -1,4 +1,6 @@
-package com.carloscipreste.gragas.model.Produto.DTOs;
+package com.carloscipreste.gragas.model.produto.dto;
+
+import java.math.BigDecimal;
 
 import com.carloscipreste.gragas.enums.ProdutoStatus;
 
@@ -12,9 +14,8 @@ public record ProdutoUpdateDTO(
         @NotBlank String nome,
         @NotBlank String descricao,
         @NotBlank String categoria,
-        @Positive double preco,
+        @Positive BigDecimal preco,
         @Min(0) int quantidadeEstoque,
-        @Nullable @Enumerated ProdutoStatus ativo
-        ) {
+        @Nullable @Enumerated ProdutoStatus status) {
 
 }
